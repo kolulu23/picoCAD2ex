@@ -1,12 +1,13 @@
 # --- picoCAD user data & outputs ---------------------------------------------
 .picocad/
 backups/
-examples/
 output/
 settings.json
 skrovet.log
 
-# picoCAD-generated artifacts (PNG textures, GLTF/OBJ exports, GIFs, binaries)
+# picoCAD-generated artifacts (PNG textures, GLTF/OBJ exports, GIFs, binaries).
+# Exceptions are forced-added via `git add -f` when a rendered preview is
+# checked in deliberately (see `assets/football.gif`, the README demo).
 *.png
 *.gif
 *.gltf
@@ -15,6 +16,12 @@ skrovet.log
 *.mtl
 *.dll
 *.exe
+
+# Example export artifacts (binaries/sprites/pdfs) -- never track, but DO
+# keep the example *.txt model files (see `examples/.gitignore`).
+examples/*.png
+examples/*.gltf
+examples/*.bin
 
 # --- Python -------------------------------------------------------------------
 # uv-managed virtualenv (regenerated via `uv sync`)
@@ -37,3 +44,6 @@ dist/
 
 # Generated model files from recipe scripts
 models/cube.txt
+
+# Allow the README demo GIF (the only GIF intentionally tracked in repo).
+!assets/football.gif

@@ -29,7 +29,8 @@ flags, up to 4 motion tracks per node, ASCII-only JSON.
 
 ## Ground truth
 
-- **`SCHEMA.md`** in the project root is the authoritative file-format
+- **`SCHEMA.md`** (alongside this `SKILL.md` in
+  `.agents/skills/picocad2-edit/`) is the authoritative file-format
   reference. Read it before any edit. It is correct as of the example
   files in `examples/`; if you find a discrepancy, trust the real
   picoCAD-saved file and update `SCHEMA.md`.

@@ -4,6 +4,12 @@ Reusable, model-agnostic toolkit for writing [picoCAD 2] model `*.txt`
 files by hand or procedurally. The `picocad` package knows only the file
 format; per-model "recipe" scripts supply the geometry.
 
+![football demo](assets/football.gif)
+
+*Rendered from `models/football.txt` produced by
+`scripts/gen_football.py` — a 32-face truncated icosahedron, 12 black
+pentagons + 20 white hexagons, planar-UV-mapped onto a 128×128 texture.*
+
 ## Layout
 
 ```
@@ -18,6 +24,9 @@ scripts/               # runnable recipe scripts (not imported by the lib)
 └── gen_cube.py        #   unit cube
 tests/                 # pytest suite
 └── test_smoke.py      #   asserts file-format invariants on a built model
+examples/              # real picoCAD 2 v2.0 sample models (read-only refs)
+assets/                # rendered previews checked into the repo
+.agents/skills/        # opencode skills (picocad2-edit, picocad2-manual)
 ```
 
 ## Why flat layout
@@ -60,6 +69,12 @@ python -m pytest
 - `texture.pixels` is always exactly 16384 hex chars (128x128).
 - Every `Node` carries 4 motion tracks (picoCAD writes 4 even when empty).
 - Output is ASCII-only (non-ASCII breaks GIF export per picoCAD manual).
+
+For the full canonical schema with example snippets, cardinality tables,
+and known conflicts (real files vs. manual-skill claims), see
+[`.agents/skills/picocad2-edit/SCHEMA.md`](.agents/skills/picocad2-edit/SCHEMA.md).
+Real picoCAD-saved reference models live under [`examples/`](examples/) —
+use them as ground truth when in doubt.
 
 ## Writing a new recipe
 
