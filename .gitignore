@@ -42,8 +42,8 @@ __pycache__/
 build/
 dist/
 
-# Generated model files from recipe scripts
-models/cube.txt
+# Generated model files
+models/
 
 # Allow the README demo GIF (the only GIF intentionally tracked in repo).
 !assets/football.gif
