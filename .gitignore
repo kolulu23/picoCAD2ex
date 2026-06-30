@@ -7,3 +7,4 @@ examples/
 *.log
 *.dll
 *.exe
+settings.json
