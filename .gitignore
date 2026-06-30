@@ -1,0 +1,9 @@
+*.png
+.picocad/
+backups/
+examples/
+*.gif
+*.gltf
+*.log
+*.dll
+*.exe
