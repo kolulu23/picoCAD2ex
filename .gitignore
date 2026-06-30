@@ -34,3 +34,6 @@ __pycache__/
 # Build / dist artifacts
 build/
 dist/
+
+# Generated model files from recipe scripts
+models/cube.txt
