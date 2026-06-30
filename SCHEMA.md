@@ -39,7 +39,7 @@ truncation made it look optional.
   "colors":  [[r,g,b], ... 16 entries],    // the 16-color palette; r,g,b are floats in 0..1
   "shade_pal_1": [<16 ints>],              // lit-side shade remap table
   "shade_pal_2": [<16 ints>],              // shadow-side shade remap table
-  "pixels": "<4096 hex chars>"             // 64x64 indexed image, row-major, one char per pixel
+  "pixels": "<16384 hex chars>"            // 128x128 indexed image, row-major, one char per pixel
 }
 ```
 
@@ -54,9 +54,11 @@ truncation made it look optional.
   ```json
   "shade_pal_1":[0,31,2,2,3,1,5,6,8,8,9,11,11,12,9,14]
   ```
-- `pixels` is one contiguous hex string of length `64*64 = 4096`. Each character is a
-  single hex digit `0..F` selecting a color from `colors`. Rows are laid out
-  top-to-bottom, left-to-right.
+- `pixels` is one contiguous hex string of length `128*128 = 16384`. (Early drafts of
+  this doc said 64×64 / 4096 — that was wrong; every picoCAD-saved file, the in-app
+  editor, and the official manual all confirm 128×128, limited to 16 colors.) Each
+  character is a single hex digit `0..F` selecting a color from `colors`. Rows are
+  laid out top-to-bottom, left-to-right.
 
 ---
 
@@ -128,27 +130,44 @@ All three sub-objects are always present, each with `x`,`y`,`z` numeric fields
 - `tracks` is always a 4-element array (one per animation channel/slot). An empty
   track is just `[]`. A non-empty track is a list of keyframe objects.
 
-Keyframe shape (only `"scale"` is observed in the examples; `pos`/`rot` are
-plausible but **unverified**):
+Keyframe shape. picoCAD 2.1.0 saves revealed the on-disk `prop` tokens are the
+**short** forms `"rot"`, `"pos"`, `"scale"`, plus the manual's `"visibility"` and
+`"osc"` (oscillation) — not the long-form `"rotation"`/`"position"` the manual's
+prose uses. `axises` appears in **two forms** in the wild: as a JSON array of
+single-axis strings (`["y"]`, single axis) and as a **space-separated string**
+(`"x y"`, multi-axis). Both load.
 
 ```json
 {
-  "prop":   "scale",                  // animated property (known: "scale")
-  "axises": ["x"|"y"|"z", ...],      // axes affected (may list multiple)
-  "start":  <num>,                     // start frame
-  "stop":   <num>,                     // end frame
-  "times":  <int>,                     // number of cycles/repeats
-  "delta":  <num>,                     // per-cycle change applied to the axes
-  "icon":   <int>                      // UI icon id (e.g. 470)
+  "prop":      "rot"|"pos"|"scale"|"visibility"|"osc",  // animated property
+  "axises":    ["x"|"y"|"z", ...] OR "x y",              // axes affected (array or space-string)
+  "start":     <num>,                                    // start time, seconds
+  "stop":      <num>,                                    // end time, seconds
+  "delta":     <num>,                                    // amount to change the property
+  "times":     <int>,         // OPTIONAL; repeat count (present on pos/scale clips)
+  "icon":      <int>,         // OPTIONAL; UI icon id (e.g. 470) — absent on rot clips
+  "curve":     "<id>",        // OPTIONAL; easing curve id (e.g. "linear") — on rot clips
+  "pingpong":  <bool>,        // OPTIONAL; true = ping-pong animation (key is `pingpong`, NOT `ping`)
+  "freq":      <num>          // OPTIONAL; oscillation sine frequency (osc clips only)
 }
 ```
 
-Example from `pig.txt`:
+Example from `pig.txt` (array form, `scale`):
 ```json
 "motions":{ "tracks":[
   [{ "prop":"scale","times":3,"stop":4,"icon":470,"delta":0.1, "start":0,"axises":["y"] }],
   [{ "prop":"scale","times":3,"stop":4,"icon":470,"delta":-0.05,"start":0,"axises":["z"] }],
   [{ "prop":"scale","times":3,"stop":4,"icon":470,"delta":-0.05,"start":0,"axises":["x"] }],
+  []
+]}
+```
+
+Example from picoCAD 2.1.0-saved football.txt (string form, `rot`+`pos`):
+```json
+"motions":{ "tracks":[
+  [{ "prop":"rot",  "stop":2, "curve":"linear", "axises":"x y", "delta":0.25, "start":0, "pingpong":false }],
+  [{ "prop":"pos",  "stop":2, "axises":"y",    "delta":0.5,  "start":0, "icon":470, "times":1 }],
+  [],
   []
 ]}
 ```
@@ -237,21 +256,21 @@ Always present in v2.0 files.
   },
 
   "export_settings": {
-    "animate":          <bool>,           // OPTIONAL; whether to render an animation
+    "animate":          <bool>,           // OPTIONAL/LEGACY; whether to render an animation
     "anim":             "spin" | "sway",  // animation type (only these two observed)
     "speed":            <num>,            // animation playback speed
     "size":             <int>,            // output image resolution (e.g. 128)
     "scale":            <num>,            // output pixel scale (e.g. 3)
-    "fov_type":         "perspective",   // projection (only "perspective" observed)
+    "fov_type":         "perspective",   // OPTIONAL/LEGACY; projection (only "perspective" observed)
     "dir":              <int>,            // spin direction (e.g. -1)
     "scanlines":        <bool>,           // enable scanline shader
     "scanline_color":   <int 0..15>,      // scanline palette index
     "outline_size":     <int>,            // outline thickness in px (0 = none)
     "outline_color":    <int 0..15>,      // outline palette index
     "watermark":        "<string>",       // primary watermark text (e.g. "#picoCAD2")
-    "watermark_color":  <int 0..15>,      // primary watermark palette index
+    "watermark_color":  <int 0..15>,      // OPTIONAL/LEGACY; primary watermark palette index
     "watermark2":       "<string>",       // secondary watermark text (often "")
-    "watermark2_color": <int 0..15>       // secondary watermark palette index
+    "watermark2_color": <int 0..15>       // OPTIONAL/LEGACY; secondary watermark palette index
   }
 }
 ```
@@ -300,7 +319,7 @@ Example from `pirate.txt`:
 |------------------------------------|----------|----------------------------------------|-------|
 | `texture.colors`                   | yes      | array of exactly 16 [r,g,b]            | floats 0..1 |
 | `texture.shade_pal_1/2`            | yes      | array of exactly 16 ints               | values 0..15, or 31 (no-remap) |
-| `texture.pixels`                   | yes      | string of exactly 4096 hex chars       | 64x64 indexed image |
+| `texture.pixels`                   | yes      | string of exactly 16384 hex chars      | 128x128 indexed image |
 | `texture.transparent_color`        | yes      | int 0..15                              | |
 | `texture.background_color`         | yes      | int 0..15                              | |
 | `graph.name`                       | usually  | string                                 | root may omit |
@@ -315,13 +334,14 @@ Example from `pirate.txt`:
 | face.`color`                       | yes      | int 0..15                              | |
 | face.`notex`                       | no       | bool                                   | default false |
 | face.`dbl`                         | no       | bool                                   | default false |
-| keyframe.`prop`                    | yes      | `"scale"` (only attested)              | `pos`/`rot` unverified |
-| keyframe.`axises`                  | yes      | array of `"x"`/`"y"`/`"z"`             | may contain multiple |
+| keyframe.`prop`                    | yes      | `"rot"`/`"pos"`/`"scale"`/`"visibility"`/`"osc"` | short tokens (NOT `rotation`/`position`) |
+| keyframe.`axises`                  | yes      | array `["x",..]` OR space-string `"x y"` | **both forms load** |
+| keyframe.`start`,`stop`,`delta`    | yes      | number                                 | seconds, not frames |
 | keyframe.`start`,`stop`,`times`,`delta`,`icon` | yes | number/int          | |
 | `metadata.version`                 | yes      | `"2.0"`                                | |
 | `metadata.shading_mode`            | yes      | int (0 or 1 observed)                  | |
 | `metadata.face_mode`               | yes      | int (only 2 observed)                  | |
-| `metadata.motion_duration`         | yes      | int                                    | |
+| `metadata.motion_duration`         | yes      | int                                    | animation timeline length in **seconds** (not frames) |
 | `metadata.camera`                  | yes      | object                                 | bookmark optional |
 | `metadata.spritesheet_settings`    | yes      | object                                 | |
 | `metadata.export_settings`         | yes      | object                                 | `animate` optional within |
@@ -330,11 +350,24 @@ Example from `pirate.txt`:
 
 ## 6. Limitations / open questions
 
-- `keyframe.prop`: only `"scale"` is attested. The same keyframe structure likely
-  supports `"pos"` and `"rot"` (the editor exposes those animations), but no example
-  exercises it. Treat as "known: scale; others unverified".
+- `keyframe.prop`: `"rot"`, `"pos"`, `"scale"` are now confirmed from
+  picoCAD-saved files. `"visibility"` (Visibility/Hide clip) and `"osc"`
+  (Oscillation, with `freq`) are described by the manual but not yet captured
+  in a saved example — treat as known-from-manual, format-inferred.
+- `keyframe.curve`: identifier strings only — `"linear"` is the one observed
+  value. The full enum (e.g. ease-in/ease-out identifiers) is not attested.
+- `keyframe.times` semantics: present on `pos`/`scale` clips written by picoCAD,
+  absent on `rot` clips — appears to be a repeat/cycle count, but exact
+  interpretation vs. `start`/`stop` is not fully nailed down.
 - `face_mode` enum values other than `2`: unknown.
-- `export_settings.anim` other than `spin`/`sway`: not attested.
+- `export_settings.anim` other than `spin`/`sway`: not attested in the
+  bundled examples, but the manual implies more directions exist (camera
+  animation + direction controls). Don't assume the enum is closed.
+- `export_settings.fov_type`, `watermark_color`, `watermark2_color`,
+  `animate` are **optional/legacy**: they appear in older example files
+  (pig, pirate, waterfall) but are **omitted entirely** from picoCAD 2.1.0
+  saves (football, chair). Treat as safe-to-write but picoCAD may drop them
+  on next save. The exporter falls back to defaults for missing fields.
 - 7-gon faces: no example contains exactly 7 corners, but the parser clearly
   accepts variable arity (3..8); 7 is plausibly valid.
 - `shade_pal_* = 31` semantics ("no remap") is inferred from usage; the editor

@@ -320,23 +320,28 @@ Optional/observed per-face flags (mostly omitted unless toggled): `dbl`,
 
 ```jsonc
 {
-  "prop":   "scale" | "position" | "rotation" | "visibility" | "oscillation",
-  "icon":   470,                 // icon index (color-coded)
-  "start":  0,                   // timeline start time, seconds
-  "stop":   4,                   // timeline stop time, seconds
-  "times":  3,                   // duration multiplier / repeat count
-  "delta":  0.1,                 // amount to change the property
-  "axises": ["y"],               // subset of ["x","y","z"]
-  "curve":  "...",               // easing curve (manual key)
-  "ping":   false,               // true = ping-pong
-  "freq":   1.0                  // oscillation sine frequency (oscilation only)
+  "prop":      "rot" | "pos" | "scale" | "visibility" | "osc",
+  "icon":      470,                 // icon index (color-coded). observed on scale/pos clips.
+  "start":     0,                   // timeline start time, seconds
+  "stop":      4,                   // timeline stop time, seconds
+  "times":     1,                   // repeat count (observed on pos/scale clips)
+  "delta":     0.1,                 // amount to change the property
+  "axises":    "x y",               // **space-separated string** of axes from x|y|z (NOT a JSON array)
+  "curve":     "linear",            // easing curve id (e.g. "linear")
+  "pingpong":  false,               // true = ping-pong (key is `pingpong`, not `ping`)
+  "freq":      1.0                  // oscillation sine frequency (oscillation only)
 }
 ```
 
-> Verified fields actually written by picoCAD: `prop`, `icon`, `start`,
-> `stop`, `times`, `delta`, `axises`. `curve`, `ping`, `freq` exist per the
-> manual's property panel description; if you author by hand and picoCAD
-> doesn't read them, leave at default.
+> Field names verified from picoCAD-saved files (`models/football.txt`):
+> - `prop` is one of `"rot"`, `"pos"`, `"scale"`, `"visibility"`, `"osc"`
+>   (short tokens — NOT `"rotation"`/`"position"`).
+> - `axises` is a **space-separated string** (e.g. `"x y"`, `"y"`), **not** a JSON array.
+> - The ping-pong flag is `"pingpong"` (boolean), not `"ping"`.
+> - `icon` and `times` are not always written — `rot` clips in the wild omit
+>   them and use `curve` instead; `pos`/`scale` clips tend to include them.
+> When hand-authoring, mirror an existing clip of the same `prop` from a
+> picoCAD-saved file to be safe.
 
 ## Worked authoring patterns (within picoCAD's intentional limits)
 
