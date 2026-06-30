@@ -1,10 +1,36 @@
-*.png
+# --- picoCAD user data & outputs ---------------------------------------------
 .picocad/
 backups/
 examples/
+output/
+settings.json
+skrovet.log
+
+# picoCAD-generated artifacts (PNG textures, GLTF/OBJ exports, GIFs, binaries)
+*.png
 *.gif
 *.gltf
-*.log
+*.bin
+*.obj
+*.mtl
 *.dll
 *.exe
-settings.json
+
+# --- Python -------------------------------------------------------------------
+# uv-managed virtualenv (regenerated via `uv sync`)
+.venv/
+
+# Python bytecode caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Build / dist artifacts
+build/
+dist/
