@@ -7,9 +7,9 @@ separate file so the original ``football_shoe.txt`` is preserved.
 
 Run::
 
-    uv run python scripts/gen_football_shoe_v2.py
+    uv run python scripts/football_shoe/gen_football_shoe_kimi-k2.7-code.py
 
-Outputs ``models/football_shoe_v2.txt``.
+Outputs ``models/football_shoe/football_shoe_kimi-k2.7-code.txt``.
 """
 
 from __future__ import annotations

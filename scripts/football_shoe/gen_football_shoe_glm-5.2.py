@@ -9,12 +9,17 @@ from heel to toe, plus a separate sole band and 6 pyramid studs. The
 whole model is centered at the origin so the outward-winding heuristic
 is reliable. Output is ASCII-only JSON.
 
-Run:  uv run python scripts/football_shoe/gen_football_shoe_glm-5.2.py
+Run::
+
+    uv run python scripts/football_shoe/gen_football_shoe_glm-5.2.py
+
+Outputs ``models/football_shoe/football_shoe_glm-5.2.txt``.
 """
 
 from __future__ import annotations
 
 import math
+from pathlib import Path
 
 from picocad.model import Camera, ExportSettings, Face, Mesh, Model, Node
 from picocad.texture import Texture
@@ -418,8 +423,11 @@ def build_football_shoe() -> Model:
 
 
 def main() -> None:
-    out = "models/football_shoe/football_shoe_glm-5.2.txt"
     model = build_football_shoe()
+    script_name = Path(__file__).resolve().name
+    model_name = script_name.removeprefix("gen_").replace(".py", ".txt")
+    out = Path(__file__).resolve().parent.parent.parent / "models" / "football_shoe" / model_name
+    out.parent.mkdir(parents=True, exist_ok=True)
     model.write(out)
 
     n_verts = sum(len(m.vertices) // 3 for m in (build_upper(), build_sole(), build_studs()))

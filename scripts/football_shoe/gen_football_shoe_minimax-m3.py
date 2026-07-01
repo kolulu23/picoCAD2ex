@@ -15,7 +15,9 @@ is a one-line change if a left-foot variant is wanted later.
 
 Run::
 
-    uv run python scripts/gen_football_boot.py
+    uv run python scripts/football_shoe/gen_football_shoe_minimax-m3.py
+
+Outputs ``models/football_shoe/football_shoe_minimax-m3.txt``.
 """
 
 from __future__ import annotations

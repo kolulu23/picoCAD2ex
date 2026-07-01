@@ -3,6 +3,12 @@
 
 Blue and white colour scheme with textured details: side swoosh, toe cap
 stitching, stud pattern, heel counter, tongue logo, lace holes.
+
+Run::
+
+    uv run python scripts/football_shoe/gen_football_shoe_qwen-3.7-plus.py
+
+Outputs ``models/football_shoe/football_shoe_qwen-3.7-plus.txt``.
 """
 
 from __future__ import annotations
@@ -332,7 +338,9 @@ def build_football_shoe() -> Model:
 
 def main() -> None:
     model = build_football_shoe()
-    out = Path("models/football_shoe/football_shoe_qwen-3.7-plus.txt")
+    script_name = Path(__file__).resolve().name
+    model_name = script_name.removeprefix("gen_").replace(".py", ".txt")
+    out = Path(__file__).resolve().parent.parent.parent / "models" / "football_shoe" / model_name
     out.parent.mkdir(parents=True, exist_ok=True)
     model.write(out)
     print(f"Wrote {out}")

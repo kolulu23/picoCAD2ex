@@ -6,9 +6,9 @@ The shoe points along +X (toe) / -X (heel), Y-up.
 
 Run::
 
-    uv run python scripts/gen_football_shoe.py
+    uv run python scripts/football_shoe/gen_football_shoe_deepseek-v4-pro.py
 
-Outputs ``models/football_shoe.txt``.
+Outputs ``models/football_shoe/football_shoe_deepseek-v4-pro.txt``.
 """
 
 from __future__ import annotations

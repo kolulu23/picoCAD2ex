@@ -12,9 +12,9 @@ The shoe points along +X (toe) / -X (heel), Y-up.
 
 Run::
 
-    uv run python scripts/football_shoe/gen_football_shoe_opencode.py
+    uv run python scripts/football_shoe/gen_football_shoe_mimo-2.5-pro.py
 
-Outputs ``models/football_shoe_opencode.txt``.
+Outputs ``models/football_shoe/football_shoe_mimo-2.5-pro.txt``.
 """
 
 from __future__ import annotations

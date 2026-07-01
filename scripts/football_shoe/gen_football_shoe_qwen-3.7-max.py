@@ -13,9 +13,9 @@ A sleek blue-and-white soccer boot inspired by modern speed boots
 
 Run::
 
-    uv run python scripts/gen_football_shoe_v3.py
+    uv run python scripts/football_shoe/gen_football_shoe_qwen-3.7-max.py
 
-Outputs ``models/football_shoe_v3.txt``.
+Outputs ``models/football_shoe/football_shoe_qwen-3.7-max.txt``.
 """
 
 from __future__ import annotations
