@@ -76,12 +76,16 @@ class Face:
     dbl
         Optional "double-sided" flag. ``None`` omits the key from the JSON
         so picoCAD picks its own default.
+    notex
+        Optional "no texture" flag. When ``True``, the face is filled with
+        the solid palette color and UVs are ignored.
     """
 
     vertex_ids: list[int]
     uvs: list[float]
     color: int = 0
     dbl: bool | None = None
+    notex: bool | None = None
 
 
 @dataclass(slots=True)
@@ -115,6 +119,8 @@ class Mesh:
             }
             if face.dbl is not None:
                 f["dbl"] = face.dbl
+            if face.notex is not None:
+                f["notex"] = face.notex
             faces_out.append(f)
         return {
             "name": self.name,
