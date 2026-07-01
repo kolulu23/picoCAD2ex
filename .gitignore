@@ -47,3 +47,5 @@ models/
 
 # Allow the README demo GIF (the only GIF intentionally tracked in repo).
 !assets/football.gif
+
+.DS_Store
